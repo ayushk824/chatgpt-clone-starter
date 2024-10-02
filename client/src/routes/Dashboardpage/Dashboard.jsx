@@ -8,13 +8,13 @@ const Dashboard = () => {
     e.preventDefault();
     const text = e.target.text.value;
     if (!text) return;
-    await fetch("http://localhost:3000/api/chats",{
+    await fetch(`http://localhost:3000/api/chats`,{
       method:"POST",
+      credentials:"include",
       headers:{
         "Content-Type":"application/json",
-
       },
-      body:JSON.stringify({userId, text})
+      body:JSON.stringify({ text})
     });
 
   };

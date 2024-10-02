@@ -2,6 +2,7 @@ import './homepage.css'
 import{Link} from "react-router-dom";
 const Homepage = () => {
   return (
+    
     <div className='homepage'>
       <img src="/backg.jpg" alt="" className='backg' />
       <div className="left">
