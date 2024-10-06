@@ -76,7 +76,7 @@ app.post("/api/chats", ClerkExpressRequireAuth(), async (req, res) => {
   }
 });
 app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
-  const userId = req.auth.userId
+  const userId = req.auth.userId;
   try {
     const UserChat = await userChats.find({ userId });
     res.status(200).send(UserChat[0].chats);
@@ -86,14 +86,45 @@ app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
   }
 });
 
-app.get("/api/chats/id:", ClerkExpressRequireAuth(), async (req, res) => {
+app.get("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
   try {
-    const chats = await chat.findOne({_id:req.params.id , userId });
+    const chats = await chat.findOne({ _id: req.params.id, userId });
     res.status(200).send(chats);
   } catch (err) {
     console.log(err);
     res.status(500).send("error fetching chats!!!");
+  }
+});
+app.put("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
+  const userId = req.auth.userId;
+  const { question, answer, img } = req.body;
+  const newItems = [];
+
+  if (question) {
+    const userPart = { role: "user", parts: [{ text: question }] };
+    if (img) {
+      userPart.parts.push({ img });
+    }
+    newItems.push(userPart);
+  }
+
+  newItems.push({ role: "model", parts: [{ text: answer }] });
+  try {
+    const updatedChat = await chat.updateOne(
+      { _id: req.params.id, userId },
+      {
+        $push: {
+          history: {
+            $each: newItems,
+          },
+        },
+      }
+    );
+    res.status(200).send(updatedChat);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("error adding chats!!!");
   }
 });
 app.use((err, req, res, next) => {

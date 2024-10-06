@@ -20,15 +20,18 @@ const ChatList = () => {
       <span className="title">RECENT CHATS</span>
 
       <div className="list">
-        <Link>my new </Link>
         {isPending
           ? "Loading..."
           : error
           ? "Something went wrong "
-          : data?.map((chats) => {
-            <Link to ={`/dashboard/chats/${chats._id}`}> 
-            {chats.title}
+          : data?.map((chat) => {
+            
+            return(
+              <Link to ={`/dashboard/chats/${chat._id}`} key = {chat._id}> 
+            {chat.title}
             </Link>
+            )
+      
           })}
       </div>
       <hr />
