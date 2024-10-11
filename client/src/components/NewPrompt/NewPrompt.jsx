@@ -57,15 +57,15 @@ const NewPrompt = ({ data }) => {
       queryClient
         .invalidateQueries({ queryKey: ["chat", data._id] })
         .then(() => {
-          // formRef.current.reset();
-          // setQuestion("");
-          // setAnswer("");
-          // setImg({
-          //   isLoading: false,
-          //   error: "",
-          //   dbData: {},
-          //   aiData: {},
-          // });
+          formRef.current.reset();
+          setQuestion("");
+          setAnswer("");
+          setImg({
+            isLoading: false,
+            error: "",
+            dbData: {},
+            aiData: {},
+          });
         });
     },
     onError: (err) => {
@@ -76,8 +76,8 @@ const NewPrompt = ({ data }) => {
   const add = async (text, isInitial) => {
     if (!isInitial) {
       setQuestion(text);
-  
     }
+     setAnswer("")
     try {
       const result = await chat.sendMessageStream(
         Object.entries(Img.aiData).length ? [Img.aiData, text] : [text]

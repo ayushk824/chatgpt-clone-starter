@@ -1,9 +1,10 @@
 import "./chatpage.css";
 import NewPrompt from "../../components/NewPrompt/NewPrompt";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import Markdown from "react-markdown";
 import { IKImage } from "imagekitio-react";
+import { useEffect } from "react";
 
 const Chatpage = () => {
   const path = useLocation().pathname;
@@ -16,42 +17,55 @@ const Chatpage = () => {
         credentials: "include",
       }).then((res) => res.json()),
   });
-
-console.log(data);
+ 
   return (
     <div className="chatpage">
       <div className="wrapper">
         <div className="chat">
-          {isPending
-            ? "Loading..."
-            : error
-            ? "Something went wrong "
-            : data?.history?.map((message, i) => {
-                <>
-                {message.img&&(
-                  <IKImage
-                  urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
+          {isPending ? (
+            "Loading..."
+          ) : error ? (
+            "Something went wrong "
+          ) : (
+            <ul>
+              {data.history.map((message, i) => (
+                <li key={i}>
+                  {message.img && (
+                    <IKImage
+                      urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
                       path={message.img}
                       height="300"
                       width="400"
                       transformation={[{ height: 300, width: 400 }]}
                       loading="lazy"
                       lqip={{ active: true, quality: 20 }}
-                  />
-                )}
-                  return(
-                  <div
-                    className ={
-                      message.role ==="user" ? "message user" : "message"
-                    }
-                    key={i}
-                  >
-                    <Markdown>{message.parts[0].text}</Markdown>
-                  </div>
-                  )
-                </>
-              })}
-
+                    />
+                  )}
+                  {message.parts.map((part, j) => (
+                    <div
+                      className={
+                        message.role === "user" ? "message user" : "message"
+                      }
+                      key={j}
+                    >
+                      {part.text && <Markdown>{part.text}</Markdown>}
+                      {part.img && (
+                        <IKImage
+                          urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
+                          path={part.img}
+                          height="300"
+                          width="400"
+                          transformation={[{ height: 300, width: 400 }]}
+                          loading="lazy"
+                          lqip={{ active: true, quality: 20 }}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          )}
           {data && <NewPrompt data={data} />}
         </div>
       </div>
